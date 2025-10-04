@@ -1,9 +1,16 @@
+/* Universal Box Sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* General Body Styles */
 body {
     font-family: 'Inter', sans-serif;
     background-color: #f8f9fa;
     color: #343a40;
     line-height: 1.6;
+    margin: 0;
+    padding: 0;
 }
 
 /* Container */
@@ -34,6 +41,13 @@ body {
 /* Form Styles */
 .form-group {
     margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
 }
 
 .form-control {
@@ -113,6 +127,8 @@ body {
     list-style: none;
     display: flex;
     gap: 1rem;
+    margin: 0;
+    padding: 0;
 }
 
 .nav-link {
