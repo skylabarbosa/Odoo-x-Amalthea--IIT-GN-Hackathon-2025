@@ -1,15 +1,27 @@
 <% layout("/layouts/boilerplate") %>
 
-    <nav class="navbar">
-        <a href="/" class="navbar-brand">Expenso</a>
-        <ul class="navbar-nav">
-            <% if (user) { %>
-                <li class="nav-item"><a href="/auth/logout" class="nav-link">Logout</a></li>
-            <% } else { %>
-                <li class="nav-item"><a href="/auth/login" class="nav-link">Login</a></li>
-                <li class="nav-item"><a href="/auth/signup" class="nav-link">Sign Up</a></li>
-            <% } %>
-        </ul>
+    <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/"><i class="fa-solid fa-receipt"></i> Expenso</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNavAltMarkup"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ms-auto">
+                    <% if (user) { %>
+                        <a class="nav-link" href="/auth/logout">Logout</a>
+                    <% } else { %>
+                        <a class="nav-link" href="/auth/login">Login</a>
+                        <a class="nav-link" href="/auth/signup">Sign Up</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
     </nav>
     <div class="container">
         <% if (success_msg && success_msg.length > 0) { %>

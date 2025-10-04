@@ -91,39 +91,69 @@ body {
 }
 
 
-/* Navigation Bar */
-.navbar {
-    background-color: #fff;
-    padding: 1rem 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e9ecef;
+/* Custom styles to complement Bootstrap */
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
 }
 
-.navbar-brand {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #007bff;
-    text-decoration: none;
+@media (max-width: 576px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .card {
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
 }
 
-.navbar-nav {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
+/* Enhanced mobile-first form styling */
+.form-floating {
+    margin-bottom: 1rem;
 }
 
-.nav-link {
-    color: #495057;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
+.form-floating > .form-control {
+    height: calc(3.5rem + 2px);
+    padding: 1rem 0.75rem;
 }
 
-.nav-link:hover {
-    color: #007bff;
+/* Better mobile table styling */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
 }
 
 /* Alerts */
