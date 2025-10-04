@@ -1,17 +1,12 @@
 /* General Body Styles */
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Oswald', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, sans-serif;
     background-color: #f8f9fa;
     color: #343a40;
     line-height: 1.6;
 }
 
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 2rem;
-}
+/* Container: use Bootstrap's default container sizing; no override */
 
 /* Card Styles */
 .card {
