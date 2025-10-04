@@ -1,4 +1,4 @@
-const Expense = require('../models/Expense');
+const Expense = require('../models/expense');
 
 const processNextApproval = async (expenseId) => {
     const expense = await Expense.findById(expenseId);

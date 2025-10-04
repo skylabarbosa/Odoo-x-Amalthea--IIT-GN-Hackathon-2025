@@ -1,6 +1,6 @@
 const Expense = require('../models/expense');
-const User = require('../models/User');
-const Company = require('../models/Company');
+const User = require('../models/user');
+const Company = require('../models/company');
 const currencyConverter = require('../utils/currencyConverter');
 
 // @desc    Get employee dashboard with their expenses

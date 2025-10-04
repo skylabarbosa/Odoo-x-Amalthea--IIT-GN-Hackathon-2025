@@ -1,4 +1,28 @@
-<% if(success && success.length) { %>
+<% if(locals.success_msg && success_msg.length > 0) { %>
+<div class="alert alert-success alert-dismissible fade show col-6 offset-3"
+     role="alert">
+    <%= success_msg %>
+    <button type="button" 
+        class="btn-close" 
+        data-bs-dismiss="alert" 
+        aria-label="Close">
+    </button>
+</div>
+<% } %>
+
+<% if(locals.error_msg && error_msg.length > 0) { %>
+<div class="alert alert-danger alert-dismissible fade show col-6 offset-3"
+     role="alert">
+    <%= error_msg %>
+    <button type="button" 
+        class="btn-close" 
+        data-bs-dismiss="alert" 
+        aria-label="Close">
+    </button>
+</div>
+<% } %>
+
+<% if(locals.success && success.length) { %>
 <div class="alert alert-success alert-dismissible fade show col-6 offset-3"
      role="alert">
     <%= success %>
@@ -10,7 +34,7 @@
 </div>
 <% } %>
 
-<% if(error && error.length) { %>
+<% if(locals.error && error.length) { %>
 <div class="alert alert-danger alert-dismissible fade show col-6 offset-3"
      role="alert">
     <%= error %>

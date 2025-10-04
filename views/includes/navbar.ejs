@@ -1,20 +1,11 @@
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/"><i class="fa-regular fa-compass"></i></a>
-    <button 
-        class="navbar-toggler" 
-        type="button" 
-        data-bs-toggle="collapse" 
-        data-bs-target="#navbarNavAltMarkup" 
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/">Home</a>
-        <a class="nav-link" href="/listings">All Listings</a>
-        <a class="nav-link" href="/listings/new">Add new Listing</a>
-      </div>
-    </div>
-  </div>
+<nav class="navbar">
+    <a href="/" class="navbar-brand">Expenso</a>
+    <ul class="navbar-nav">
+        <% if (locals.user) { %>
+            <li class="nav-item"><a href="/auth/logout" class="nav-link">Logout</a></li>
+        <% } else { %>
+            <li class="nav-item"><a href="/auth/login" class="nav-link">Login</a></li>
+            <li class="nav-item"><a href="/auth/signup" class="nav-link">Sign Up</a></li>
+        <% } %>
+    </ul>
 </nav>

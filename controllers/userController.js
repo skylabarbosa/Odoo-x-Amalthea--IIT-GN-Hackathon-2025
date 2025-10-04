@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/user');
 
 // @desc    Get admin dashboard with users and managers
 // @route   GET /admin/dashboard
