@@ -1,0 +1,87 @@
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="card" style="max-width: 500px; width: 100%; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 2rem; font-weight: 700;">
+                E
+            </div>
+            <h1 class="card-title" style="margin-bottom: 0.5rem;">Create Account</h1>
+            <p style="color: #64748b; font-size: 1rem;">Join us and start managing your expenses efficiently</p>
+        </div>
+        
+        <form action="/auth/signup" method="POST">
+            <input type="hidden" id="currency" name="currency">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required>
+                <small style="color: #64748b; font-size: 0.875rem;">Password must be at least 8 characters long</small>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input type="text" id="companyName" name="companyName" class="form-control" placeholder="Your company name" required>
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <select id="country" name="country" class="form-control" required>
+                        <option value="">Select your country</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 0.5rem;">
+                <input type="checkbox" id="terms" required style="margin-right: 0.75rem;">
+                <label for="terms" style="font-size: 0.875rem; color: #64748b; margin: 0;">
+                    I agree to the <a href="#" style="color: #6366f1;">Terms of Service</a> and <a href="#" style="color: #6366f1;">Privacy Policy</a>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem; margin-bottom: 1.5rem;">
+                <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                Create Account
+            </button>
+        </form>
+        
+        <div style="text-align: center; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+            <p style="color: #64748b; margin-bottom: 0;">
+                Already have an account? 
+                <a href="/auth/login" style="color: #6366f1; text-decoration: none; font-weight: 600;">Sign in here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    fetch('https://restcountries.com/v3.1/all?fields=name,currencies')
+        .then(response => response.json())
+        .then(data => {
+            const countrySelect = document.getElementById('country');
+            const currencyInput = document.getElementById('currency');
+            data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+            data.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country.name.common;
+                option.textContent = country.name.common;
+                if (Object.keys(country.currencies).length > 0) {
+                    option.dataset.currency = Object.keys(country.currencies)[0];
+                }
+                countrySelect.appendChild(option);
+            });
+
+            countrySelect.addEventListener('change', () => {
+                const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+                currencyInput.value = selectedOption?.dataset?.currency || '';
+            });
+        });
+</script>

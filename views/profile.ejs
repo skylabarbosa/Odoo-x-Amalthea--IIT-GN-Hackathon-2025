@@ -1,0 +1,40 @@
+<div class="card" style="max-width: 720px; margin: 0 auto;">
+    <a href="javascript:history.back()" class="btn btn-secondary" style="padding: 0.5rem 1rem; margin-bottom: 1rem; width: fit-content;">
+        <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+        Back
+    </a>
+    <h1 class="card-title">Profile</h1>
+    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 1.5rem; align-items: center;">
+        <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem; font-weight: 700;">
+            <%= profile.name ? profile.name.charAt(0).toUpperCase() : 'U' %>
+        </div>
+        <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #1e293b;"><%= profile.name %></div>
+            <div style="color: #64748b;"><%= profile.email %></div>
+            <div style="margin-top: 0.5rem;">
+                <span class="status-badge status-approved"><%= profile.role %></span>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="card" style="padding: 1rem; margin: 0;">
+            <div style="font-weight: 600; color: #64748b; font-size: 0.875rem;">Company</div>
+            <div style="font-size: 1.125rem; font-weight: 600; color: #1e293b;">
+                <%= profile.company ? profile.company.name : '—' %>
+            </div>
+        </div>
+        <div class="card" style="padding: 1rem; margin: 0;">
+            <div style="font-weight: 600; color: #64748b; font-size: 0.875rem;">Default Currency</div>
+            <div style="font-size: 1.125rem; font-weight: 600; color: #1e293b;">
+                <%= profile.company ? profile.company.defaultCurrency : '—' %>
+            </div>
+        </div>
+        <div class="card" style="padding: 1rem; margin: 0;">
+            <div style="font-weight: 600; color: #64748b; font-size: 0.875rem;">Account Status</div>
+            <div style="font-size: 1.125rem; font-weight: 600; color: #1e293b;">
+                <%= profile.status || 'Approved' %>
+            </div>
+        </div>
+    </div>
+</div>

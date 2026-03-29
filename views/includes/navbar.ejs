@@ -1,0 +1,24 @@
+<nav class="navbar">
+    <div class="navbar-content">
+        <a href="/" class="navbar-brand">Expenso</a>
+        <div class="navbar-actions">
+        <% if (user) { %>
+            <div class="nav-profile-menu">
+                <button type="button" class="nav-profile-btn" data-toggle="profile-menu">
+                    <span class="nav-avatar"><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></span>
+                    <span class="nav-name"><%= user.name %></span>
+                    <span class="nav-caret">v</span>
+                </button>
+                <div class="nav-dropdown">
+                    <a href="/profile" class="nav-dropdown-item">Profile</a>
+                    <a href="/auth/logout" class="nav-dropdown-item">Logout</a>
+                </div>
+            </div>
+        <% } else { %>
+            <a href="/auth/login" class="nav-link">Login</a>
+            <a href="/auth/signup" class="nav-link">Sign Up</a>
+        <% } %>
+        </div>
+    </div>
+</nav>
+

@@ -1,0 +1,439 @@
+<!-- Welcome Section -->
+<div class="card">
+    <div class="d-flex justify-between align-center">
+        <div>
+            <h1 class="card-title">Admin Dashboard</h1>
+            <p class="text-gray-600">Welcome, <%= user.name %>! Manage your organization's expense system.</p>
+        </div>
+        <div class="text-right">
+            <div class="status-badge status-approved">System Administrator</div>
+        </div>
+    </div>
+</div>
+
+<% const approvalFlowSample = `{
+  "stages": [
+    {
+      "name": "Manager Approval",
+      "type": "SEQUENTIAL",
+      "useManager": true
+    },
+    {
+      "name": "Finance Review",
+      "type": "PERCENTAGE",
+      "percentage": 60,
+      "approverUserIds": ["USER_ID_1", "USER_ID_2"]
+    },
+    {
+      "name": "Director Override",
+      "type": "SPECIFIC_OVERRIDE",
+      "specificApproverIds": ["USER_ID_3"]
+    }
+  ]
+}`; %>
+
+<div class="card" style="margin-top: 2rem;">
+    <h3 class="card-title">Approval Flow (Advanced)</h3>
+    <p style="color: #64748b; margin-bottom: 1rem;">
+        Configure multi-stage approvals as JSON. Leave empty to keep single-manager approvals.
+    </p>
+    <form action="/admin/approval-flow" method="POST">
+        <div class="form-group">
+            <label for="approvalFlow">Approval Flow JSON</label>
+            <textarea id="approvalFlow" name="approvalFlow" class="form-control" rows="12" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;"><%= (locals.approvalFlowConfig && approvalFlowConfig.trim()) ? approvalFlowConfig : approvalFlowSample %></textarea>
+            <small style="color: #64748b; font-size: 0.875rem;">
+                Use valid user IDs from your company. Stages must include approverUserIds, specificApproverIds, or useManager.
+            </small>
+        </div>
+        <button class="btn btn-primary" style="width: 100%;">
+            <i class="fas fa-save" style="margin-right: 0.5rem;"></i>
+            Save Approval Flow
+        </button>
+    </form>
+</div>
+
+<!-- Dashboard Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Total Users -->
+    <div class="card">
+        <h3 class="card-title">Total Users</h3>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #6366f1;"><%= (locals.adminStats && adminStats.totalUsers) || 0 %></div>
+            <div style="color: #64748b;">Active Users</div>
+        </div>
+    </div>
+
+    <!-- Pending Approvals -->
+    <div class="card">
+        <h3 class="card-title">Pending Approvals</h3>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #f59e0b;"><%= (locals.adminStats && adminStats.pendingApprovals) || 0 %></div>
+            <div style="color: #64748b;">Awaiting Review</div>
+        </div>
+    </div>
+
+    <!-- Monthly Expenses -->
+    <div class="card">
+        <h3 class="card-title">Monthly Expenses</h3>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #10b981;">
+                <%= (locals.adminStats && adminStats.monthlyExpenses) ? adminStats.monthlyExpenses.toFixed(2) : '0.00' %>
+                <%= (locals.adminStats && adminStats.currency) || '' %>
+            </div>
+            <div style="color: #64748b;">This Month</div>
+        </div>
+    </div>
+
+    <!-- System Health -->
+    <div class="card">
+        <h3 class="card-title">System Health</h3>
+        <div style="text-align: center; padding: 1.5rem;">
+            <div style="font-size: 2.5rem; font-weight: 700; color: #10b981;"><%= (locals.adminStats && adminStats.approvalRate) || 0 %>%</div>
+            <div style="color: #64748b;">Approval Rate</div>
+        </div>
+    </div>
+</div>
+
+<!-- User Management -->
+<div class="card">
+    <div class="d-flex justify-between align-center mb-4">
+        <h2 class="card-title">User Management</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Export Users</button>
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Bulk Actions</button>
+        </div>
+    </div>
+    
+    <form action="/users/create" method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 0.75rem;">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Enter full name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="user@company.com" required>
+        </div>
+        <div class="form-group">
+            <label for="companyName">Company Name</label>
+            <input type="text" id="companyName" class="form-control" value="<%= (locals.adminStats && adminStats.companyName) || '' %>" readonly>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Enter secure password" required>
+        </div>
+        <div class="form-group">
+            <label for="role">Role</label>
+            <select name="role" id="role" class="form-control" required>
+                <option value="">Select Role</option>
+                <option value="Employee">Employee</option>
+                <option value="Manager">Manager</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+        <div class="form-group" id="manager-group">
+            <label for="manager">Assign Manager</label>
+            <select name="managerId" id="manager" class="form-control">
+                <option value="">Select Manager</option>
+                <% if(locals.managers) { managers.forEach(manager => { %>
+                    <option value="<%= manager._id %>"><%= manager.name %></option>
+                <% }); } %>
+            </select>
+            <small id="manager-help" style="color: #64748b; font-size: 0.875rem; display: none;">Manager is required for Employee role.</small>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1; text-align: center;">
+            <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                Create User
+            </button>
+        </div>
+    </form>
+    
+    <div class="d-flex justify-between align-center mb-3">
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #374151;">Existing Users</h3>
+        <div class="d-flex gap-2">
+            <input type="text" id="user-search-input" placeholder="Search users..." style="padding: 0.5rem 1rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem;">
+            <button class="btn btn-secondary" id="user-search-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Search</button>
+        </div>
+    </div>
+
+    <% if (locals.pendingManagers && pendingManagers.length > 0) { %>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 class="card-title">Pending Manager Requests</h3>
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% pendingManagers.forEach(manager => { %>
+                            <tr>
+                                <td><%= manager.name %></td>
+                                <td><%= manager.email %></td>
+                                <td>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <form action="/users/approve/<%= manager._id %>" method="POST">
+                                            <button type="submit" class="btn btn-success" style="padding: 0.4rem 0.75rem; font-size: 0.875rem;">Approve</button>
+                                        </form>
+                                        <form action="/users/reject/<%= manager._id %>" method="POST">
+                                            <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.75rem; font-size: 0.875rem;">Reject</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (locals.recentUserActions && recentUserActions.length > 0) { %>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 class="card-title">Recent Manager Actions</h3>
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Status</th>
+                            <th>Manager</th>
+                            <th>When</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentUserActions.forEach(action => { %>
+                            <tr>
+                                <td><%= action.name %></td>
+                                <td><%= action.status %></td>
+                                <td><%= action.statusUpdatedBy ? action.statusUpdatedBy.name : 'Unknown' %></td>
+                                <td><%= action.statusUpdatedAt ? new Date(action.statusUpdatedAt).toLocaleString() : '' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+
+    <% if (locals.recentExpenseActions && recentExpenseActions.length > 0) { %>
+        <div class="card" style="margin-bottom: 1.5rem;">
+            <h3 class="card-title">Recent Expense Approvals</h3>
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Manager</th>
+                            <th>When</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% recentExpenseActions.forEach(action => { %>
+                            <tr>
+                                <td><%= action.employee ? action.employee.name : 'Unknown' %></td>
+                                <td><%= action.category %></td>
+                                <td><%= action.status %></td>
+                                <td><%= action.statusUpdatedBy ? action.statusUpdatedBy.name : 'Unknown' %></td>
+                                <td><%= action.statusUpdatedAt ? new Date(action.statusUpdatedAt).toLocaleString() : '' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } %>
+    
+    <div style="overflow-x: auto;">
+    <% const managerById = {}; %>
+    <% if (locals.managers) { managers.forEach(manager => { managerById[String(manager._id)] = manager.name; }); } %>
+        <table class="table" id="users-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Manager</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    <% if (locals.users && users.length > 0) { %>
+        <% users.forEach(userItem => { %>
+            <% const managerName = userItem.manager ? (managerById[String(userItem.manager)] || 'Assigned') : ''; %>
+            <tr data-search="<%= [userItem.name, userItem.email, userItem.role, managerName, userItem.status || 'Approved'].join(' ').toLowerCase() %>">
+                <td><%= userItem.name %></td>
+                <td><%= userItem.email %></td>
+                <td><%= userItem.role %></td>
+                <td><%= userItem.manager ? (managerById[String(userItem.manager)] || 'Assigned') : '-' %></td>
+                <td><%= userItem.status || 'Approved' %></td>
+                <td>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">View</button>
+                        <% if (userItem.role !== 'Admin') { %>
+                            <form action="/users/delete/<%= userItem._id %>" method="POST">
+                                <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Delete</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </td>
+            </tr>
+        <% }) %>
+        <tr id="users-no-results" style="display: none;">
+            <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">
+                No matching users.
+            </td>
+        </tr>
+    <% } else { %>
+        <tr>
+            <td colspan="6" style="text-align: center; padding: 3rem; color: #64748b;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                <div>User list will be displayed here</div>
+            </td>
+        </tr>
+    <% } %>
+</tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const roleSelect = document.getElementById('role');
+        const managerGroup = document.getElementById('manager-group');
+        const managerSelect = document.getElementById('manager');
+        const managerHelp = document.getElementById('manager-help');
+
+        if (!roleSelect || !managerGroup || !managerSelect || !managerHelp) {
+            return;
+        }
+
+        function updateManagerRequirement() {
+            const isEmployee = roleSelect.value === 'Employee';
+            managerSelect.required = isEmployee;
+            managerHelp.style.display = isEmployee ? 'block' : 'none';
+            managerGroup.style.display = isEmployee ? 'block' : 'none';
+        }
+
+        roleSelect.addEventListener('change', updateManagerRequirement);
+        updateManagerRequirement();
+
+        const searchInput = document.getElementById('user-search-input');
+        const searchButton = document.getElementById('user-search-btn');
+        const usersTable = document.getElementById('users-table');
+        if (searchInput && searchButton && usersTable) {
+            const rows = Array.from(usersTable.querySelectorAll('tbody tr'))
+                .filter(row => row.id !== 'users-no-results');
+            const noResultsRow = document.getElementById('users-no-results');
+
+            function applyFilter() {
+                const query = searchInput.value.trim().toLowerCase();
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    const haystack = row.getAttribute('data-search') || row.textContent.toLowerCase();
+                    const match = !query || haystack.includes(query);
+                    row.style.display = match ? '' : 'none';
+                    if (match) {
+                        visibleCount += 1;
+                    }
+                });
+
+                if (noResultsRow) {
+                    noResultsRow.style.display = visibleCount === 0 ? '' : 'none';
+                }
+            }
+
+            searchButton.addEventListener('click', applyFilter);
+            searchInput.addEventListener('input', applyFilter);
+        }
+    })();
+</script>
+
+<!-- System Configuration -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Approval Rules -->
+    <div class="card">
+        <h3 class="card-title">Approval Rules Configuration</h3>
+        <form action="/admin/config" method="POST">
+            <div style="padding: 1.5rem; background: #f8fafc; border-radius: 0.75rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <div style="font-weight: 600;">Default Company Currency</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">Used for conversions and reporting</div>
+                    </div>
+                    <select name="defaultCurrency" class="form-control" style="width: 180px; padding: 0.5rem 0.75rem;" required>
+                        <% const currentCurrency = (locals.adminStats && adminStats.currency) || ''; %>
+                        <option value="USD" <%= currentCurrency === 'USD' ? 'selected' : '' %>>USD</option>
+                        <option value="EUR" <%= currentCurrency === 'EUR' ? 'selected' : '' %>>EUR</option>
+                        <option value="GBP" <%= currentCurrency === 'GBP' ? 'selected' : '' %>>GBP</option>
+                        <option value="INR" <%= currentCurrency === 'INR' ? 'selected' : '' %>>INR</option>
+                        <option value="JPY" <%= currentCurrency === 'JPY' ? 'selected' : '' %>>JPY</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <div style="font-weight: 600;">Auto-approve expenses under</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">Expenses below this amount are automatically approved</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <input type="number" step="0.01" min="0" name="autoApproveUnderAmount" class="form-control" style="width: 140px; padding: 0.5rem 0.75rem;" value="<%= (locals.companySettings && companySettings.autoApproveUnderAmount) || 0 %>">
+                        <label style="position: relative; display: inline-block; width: 50px; height: 24px;">
+                            <input type="checkbox" name="autoApproveEnabled" style="opacity: 0; width: 0; height: 0;" <%= (locals.companySettings && companySettings.autoApproveEnabled) ? 'checked' : '' %>>
+                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;"></span>
+                        </label>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div>
+                        <div style="font-weight: 600;">Require receipt for expenses over</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">Mandatory receipt upload for higher amounts</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <input type="number" step="0.01" min="0" name="requireReceiptOverAmount" class="form-control" style="width: 140px; padding: 0.5rem 0.75rem;" value="<%= (locals.companySettings && companySettings.requireReceiptOverAmount) || 0 %>">
+                        <label style="position: relative; display: inline-block; width: 50px; height: 24px;">
+                            <input type="checkbox" name="requireReceiptEnabled" style="opacity: 0; width: 0; height: 0;" <%= (locals.companySettings && companySettings.requireReceiptEnabled) ? 'checked' : '' %>>
+                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2196F3; transition: .4s; border-radius: 24px;"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-save" style="margin-right: 0.5rem;"></i>
+                Save Configuration
+            </button>
+        </form>
+    </div>
+
+    <!-- System Settings -->
+    <div class="card">
+        <h3 class="card-title">System Settings</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-database" style="margin-right: 0.5rem;"></i>
+                Database Management
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-chart-bar" style="margin-right: 0.5rem;"></i>
+                Analytics & Reports
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-shield-alt" style="margin-right: 0.5rem;"></i>
+                Security Settings
+            </button>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-cog" style="margin-right: 0.5rem;"></i>
+                General Settings
+            </button>
+        </div>
+    </div>
+</div>
+
+
+

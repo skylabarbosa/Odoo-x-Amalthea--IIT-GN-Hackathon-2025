@@ -1,0 +1,24 @@
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">Expenso</a>
+        <ul class="navbar-nav">
+            <% if (user) { %>
+                <li class="nav-item"><a href="/auth/logout" class="nav-link">Logout</a></li>
+            <% } else { %>
+                <li class="nav-item"><a href="/auth/login" class="nav-link">Login</a></li>
+                <li class="nav-item"><a href="/auth/signup" class="nav-link">Sign Up</a></li>
+            <% } %>
+        </ul>
+    </nav>
+    <div class="container">
+        <% if (success_msg && success_msg.length > 0) { %>
+            <div class="alert alert-success" role="alert">
+                <%= success_msg %>
+            </div>
+        <% } %>
+        <% if (error_msg && error_msg.length > 0) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= error_msg %>
+            </div>
+        <% } %>
+        <%- body %>
+    </div>

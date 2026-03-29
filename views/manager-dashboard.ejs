@@ -1,0 +1,265 @@
+<!-- Welcome Section -->
+<div class="card">
+    <div class="d-flex justify-between align-center">
+        <div>
+            <h1 class="card-title">Manager Dashboard</h1>
+            <p class="text-gray-600">Welcome, <%= user.name %>! Manage your team's expenses and approvals.</p>
+        </div>
+        <div class="text-right">
+            <div class="status-badge status-approved">Team Manager</div>
+        </div>
+    </div>
+</div>
+
+<!-- Dashboard Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Pending Approvals -->
+    <div class="card">
+        <h3 class="card-title">Pending Approvals</h3>
+        <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;">⏳</div>
+            <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;">
+                <%= (locals.managerStats && managerStats.pendingApprovals) || 0 %>
+            </div>
+            <div style="color: #64748b;">Expenses Awaiting Review</div>
+        </div>
+    </div>
+
+    <!-- Team Stats -->
+    <div class="card">
+        <h3 class="card-title">Team Overview</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="text-center p-3 rounded-lg" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #1e40af;"><%= (locals.managerStats && managerStats.teamMembers) || 0 %></div>
+                <div style="font-size: 0.875rem; color: #1e40af;">Team Members</div>
+            </div>
+            <div class="text-center p-3 rounded-lg" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #065f46;"><%= (locals.managerStats && managerStats.approvedThisMonth) || 0 %></div>
+                <div style="font-size: 0.875rem; color: #065f46;">Approved This Month</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+        <h3 class="card-title">Quick Actions</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="#expenses-for-approval" class="btn btn-primary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-eye" style="margin-right: 0.5rem;"></i>
+                Review All Expenses
+            </a>
+            <a href="/manager/expenses/export" class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-download" style="margin-right: 0.5rem;"></i>
+                Export Reports
+            </a>
+            <a href="#team-members" class="btn btn-secondary" style="width: 100%; justify-content: flex-start;">
+                <i class="fas fa-cog" style="margin-right: 0.5rem;"></i>
+                Team Settings
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Create Employee -->
+<div class="card">
+    <div class="d-flex justify-between align-center mb-4">
+        <h2 class="card-title">Create Employee</h2>
+    </div>
+    <form action="/users/create" method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <input type="hidden" name="role" value="Employee">
+        <input type="hidden" name="managerId" value="<%= user.id %>">
+        <div class="form-group">
+            <label for="employeeName">Full Name</label>
+            <input type="text" name="name" id="employeeName" class="form-control" placeholder="Enter full name" required>
+        </div>
+        <div class="form-group">
+            <label for="employeeEmail">Email Address</label>
+            <input type="email" name="email" id="employeeEmail" class="form-control" placeholder="employee@company.com" required>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="employeePassword">Password</label>
+            <input type="password" name="password" id="employeePassword" class="form-control" placeholder="Enter secure password" required>
+        </div>
+        <div style="grid-column: 1 / -1; text-align: center;">
+            <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                <i class="fas fa-user-plus" style="margin-right: 0.5rem;"></i>
+                Create Employee
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Team Members -->
+<div class="card" id="team-members">
+    <div class="d-flex justify-between align-center mb-4">
+        <h2 class="card-title">Team Members</h2>
+    </div>
+    
+    <% if(locals.teamMembers && teamMembers.length > 0) { %>
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% teamMembers.forEach(member => { %>
+                        <tr>
+                            <td><%= member.name %></td>
+                            <td><%= member.email %></td>
+                            <td><%= member.role %></td>
+                            <td>
+                                <form action="/users/delete/<%= member._id %>" method="POST">
+                                    <button type="submit" class="btn btn-danger" style="padding: 0.25rem 0.5rem; font-size: 0.875rem;">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div style="text-align: center; padding: 3rem; color: #64748b;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">TEAM</div>
+            <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">No team members yet</div>
+            <div>Ask your admin to assign employees to you.</div>
+        </div>
+    <% } %>
+</div>
+
+<% if (locals.pendingTeamMembers && pendingTeamMembers.length > 0) { %>
+    <div class="card">
+        <div class="d-flex justify-between align-center mb-4">
+            <h2 class="card-title">Pending Employee Requests</h2>
+        </div>
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% pendingTeamMembers.forEach(member => { %>
+                        <tr>
+                            <td><%= member.name %></td>
+                            <td><%= member.email %></td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <form action="/users/approve/<%= member._id %>" method="POST">
+                                        <button type="submit" class="btn btn-success" style="padding: 0.4rem 0.75rem; font-size: 0.875rem;">Approve</button>
+                                    </form>
+                                    <form action="/users/reject/<%= member._id %>" method="POST">
+                                        <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.75rem; font-size: 0.875rem;">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<% } %>
+
+<!-- Expenses for Approval -->
+<div class="card" id="expenses-for-approval">
+    <div class="d-flex justify-between align-center mb-4">
+        <h2 class="card-title">Expenses for Approval</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Filter</button>
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Sort</button>
+        </div>
+    </div>
+    
+    <% if(locals.expenses && expenses.length > 0) { %>
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% expenses.forEach(expense => { %>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; margin-right: 0.75rem;">
+                                        <%= expense.employee.name.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600;"><%= expense.employee.name %></div>
+                                        <div style="font-size: 0.875rem; color: #64748b;"><%= expense.employee.email %></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><%= new Date(expense.date).toLocaleDateString() %></td>
+                            <td style="font-weight: 600; color: #1e40af;">
+                                <%= expense.amountInCompanyCurrency.toFixed(2) %> <%= expense.company.defaultCurrency %>
+                            </td>
+                            <td>
+                                <span style="background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 0.875rem;">
+                                    <%= expense.category %>
+                                </span>
+                            </td>
+                            <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <%= expense.description || 'No description' %>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <form action="/expenses/approve/<%= expense._id %>" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-success" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                            <i class="fas fa-check" style="margin-right: 0.25rem;"></i>
+                                            Approve
+                                        </button>
+                                    </form>
+                                    <form action="/expenses/reject/<%= expense._id %>" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                                            <i class="fas fa-times" style="margin-right: 0.25rem;"></i>
+                                            Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } else { %>
+        <div style="text-align: center; padding: 4rem; color: #64748b;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+            <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">All caught up!</div>
+            <div>No expenses awaiting approval at the moment.</div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Team Expense History -->
+<div class="card" id="team-expense-history">
+    <div class="d-flex justify-between align-center mb-4">
+        <h2 class="card-title">Team Expense History</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Filter by Date</button>
+            <button class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Export Report</button>
+        </div>
+    </div>
+    
+    <div style="text-align: center; padding: 3rem; color: #64748b;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+        <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">Team Analytics Coming Soon</div>
+        <div>View detailed team expense reports and analytics.</div>
+    </div>
+</div>
